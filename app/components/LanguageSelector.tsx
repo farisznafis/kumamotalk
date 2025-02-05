@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LanguageMessage from "./LanguageMessage";
+import { Inter } from "next/font/google";
 
 const languages = [
   { code: "日本語", label: "日本語" },
@@ -7,16 +8,18 @@ const languages = [
   { code: "English", label: "English" },
 ];
 
+const inter = Inter({ subsets: ['latin'] })
+
 export default function LanguageSelector() {
   const [selectedLanguage, setSelectedLanguage] = useState("日本語");
 
   return (
-    <div className="relative flex flex-col justify-center items-center space-y-20 top-[20vh]">
+    <div className="fixed flex flex-col justify-center items-center space-y-20 z-20 scale-50 bottom-0">
       {/* Komponen pesan */}
       <LanguageMessage />
 
       {/* Tombol pemilih bahasa */}
-      <div className="relative flex space-x-4 bg-transparent p-2 rounded-full scale-[2.8]">
+      <div className="relative flex space-x-4 bg-transparent p-2 rounded-full scale-[2.8] {inter.className}">
         {languages.map((lang) => (
           <button
             key={lang.code}

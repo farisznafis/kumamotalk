@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 
 export default function MicRecorder() {
   return (
-    <div className="flex flex-col items-center justify-center space-y-[6vh] pt-[20vh]">
+    <div className="flex flex-col items-center justify-center space-y-[10vh] z-20">
       {/* Teks Jepang */}
-      <p className="text-white text-[68px] font-bold">質問してください</p>
+      <p className="text-white text-[36px] font-bold">質問してください</p>
 
       {/* Animasi Sound Waves */}
-      <div className="flex space-x-4 h-16">
+      <div className="flex space-x-2 h-16">
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
@@ -21,12 +21,12 @@ export default function MicRecorder() {
       <style jsx>{`
         @keyframes wave {
           0%, 100% {
-            height: 12px;
+            height: 10px;
             transform: translateY(-50%);
           }
           50% {
             height: 80px;
-            transform: translateY(-50%) scale(1.3);
+            transform: translateY(-50%);
           }
         }
         .animate-wave {

@@ -14,7 +14,7 @@
 
 export default function WaveBackground() {
     return (
-      <div className="fixed inset-0 bg-[url('../public/wave-full.svg')] bg-repeat bg-[length:2360px_200px] opacity-30"></div>
+      <div className="absolute inset-0 z-0 bg-[url('../public/wave-full.svg')] bg-repeat bg-[length:1200px_100px] opacity-30"></div>
     );
   }
   
