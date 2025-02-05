@@ -1,6 +1,7 @@
 // import { Mic } from "lucide-react";
 
 import LanguageSelector from "./LanguageSelector";
+import MicRecorder from "./MicRecorder";
 
 export default function ConversationArea() {
   return (
@@ -11,15 +12,8 @@ export default function ConversationArea() {
 
         {/* Lingkaran Merah 2 */}
         <div className="absolute w-[600px] h-[600px] bg-[#e70012] rounded-full bottom-[30vh] -right-[10vh]"></div>
-        
-        {/* <p className="text-xl mb-4">質問してください</p>
-        <button className="bg-white p-4 rounded-full">
-        <Mic size={40} className="text-black" />
-        </button>
-        <p className="text-sm text-center mt-6 w-[80%]">
-        もしKumamonが異なる言語で返答する場合は、以下の言語選択ボタンを使用してください！
-        </p> */}
 
+        <MicRecorder/>
       </div>
       <LanguageSelector/>
     </div>
