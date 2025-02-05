@@ -10,6 +10,7 @@ import LanguageSelector from "./components/LanguageSelector";
 import BackgroundCircles, { RedCircles } from "./components/RedCircles";
 import ConversationArea from "./components/ConversationArea";
 import MicRecorder from "./components/MicRecorder";
+import BackgroundMusic from "./components/BackgroundMusic";
 // import FaceDetection from "./components/FaceDetection";
 
 export default function Home() {
@@ -33,6 +34,7 @@ export default function Home() {
       <LanguageSelector/>
       <ConversationArea/> 
       <WaveBackground/>
+      <BackgroundMusic/>
       {/* <LanguageSelector/> */}
       {/* <KumamonTitle/> */}
       {/* <RedCircles/> */}
