@@ -6,7 +6,10 @@ interface MicRecorderProps {
 
 export default function MicRecorder({ faceDetected }: MicRecorderProps) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-[5vh] z-20">
+    <div
+      // className="flex flex-col items-center justify-center space-y-[5vh] z-20"
+      className='flex flex-col items-center justify-center space-y-[5vh]'
+    >
       {/* Teks Jepang */}
       <p className="text-white text-[36px] font-bold">質問してください</p>
 
@@ -15,7 +18,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className={`w-6 bg-white rounded-full ${
+            className={`w-3 bg-white rounded-full ${
               faceDetected ? 'animate-wave' : 'animate-static' // ✨ Animasi berubah
             }`}
             style={{
@@ -53,7 +56,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
 
         .animate-static {
           transform-origin: center;
-          animation: static 1s infinite ease-in-out;
+          animation: static 2s infinite ease-in-out;
         }
       `}</style>
     </div>

@@ -14,12 +14,12 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center w-screen h-screen overflow-hidden bg-gray-100">
       <Header/>
-      {/* <MicRecorder faceDetected={faceDetected}/> */}
-      <LanguageSelector/>
-      <ConversationArea/> 
       <WaveBackground/>
-      <BackgroundMusic/>
-      <FaceDetection/>
+      <MicRecorder/>
+      {/* <LanguageSelector/> */}
+      {/* <FaceDetection/> */}
+      <ConversationArea/> 
+      {/* <BackgroundMusic/> */}
     </main>
   )
 }

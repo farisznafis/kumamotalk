@@ -1,6 +1,9 @@
 // import LanguageSelector from "./LanguageSelector";
 // import MicRecorder from "./MicRecorder";
 
+import FaceDetection from "./FaceDetection";
+import LanguageSelector from "./LanguageSelector";
+
 // export default function ConversationArea() {
 //   return (
 //     <div className="relative flex flex-col items-center justify-center text-white">
@@ -20,10 +23,20 @@
 
 export default function ConversationArea() {
   return (
-    <img
-      src="../kumamon.svg"
-      className="fixed opacity-100 z-10 bottom-0"
-      alt="Header Text"
-    />
+    <div className="relative w-full">
+      <img
+        src="../kumamon.svg"
+        className="opacity-100 w-full h-auto block"
+        alt="Header Text"
+      />
+      <div className="flex flex-col items-center justify-center">
+        <div className="absolute top-[20vh]">
+          <FaceDetection/>
+        </div>
+        <div className="absolute top-[30vh] z-50 w-full h-full scale-110">
+          <LanguageSelector/>
+        </div>
+      </div>
+    </div>
   );
 }

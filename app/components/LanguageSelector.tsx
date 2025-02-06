@@ -14,12 +14,12 @@ export default function LanguageSelector() {
   const [selectedLanguage, setSelectedLanguage] = useState("日本語");
 
   return (
-    <div className="fixed flex flex-col justify-center items-center space-y-20 z-20 scale-50 bottom-0">
+    <div className="relative flex flex-col justify-center items-center space-y-16 w-auto">
       {/* Komponen pesan */}
       <LanguageMessage />
 
       {/* Tombol pemilih bahasa */}
-      <div className="relative flex space-x-4 bg-transparent p-2 rounded-full scale-[2.8] {inter.className}">
+      <div className="relative flex space-x-4 bg-transparent rounded-full {inter.className} scale-150">
         {languages.map((lang) => (
           <button
             key={lang.code}

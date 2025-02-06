@@ -84,11 +84,13 @@ export default function FaceDetection() {
   return (
     <>
       {/* Hidden video element (not shown in UI) */}
-      <video ref={videoRef} autoPlay muted playsInline className="absolute z-50 bottom-0 left-0" />
+      {/* <video ref={videoRef} autoPlay muted playsInline className="absolute z-50 bottom-0 left-0" />
       {modelsLoaded ? <p className='hidden'>Face API models loaded</p> : <p className='hidden'>Loading Face API...</p>}
 
-      <canvas ref={canvasRef} className='absolute z-50 bottom-0 left-0'/>
-      <MicRecorder faceDetected={faceDetected}/> {/* change to true/false if want to fix status */}
+      <canvas ref={canvasRef} className='absolute z-50 bottom-0 left-0'/> */}
+      <div className='relative z-50 w-auto bg-red-500'>
+        <MicRecorder faceDetected={false}/> {/* change to true/false if want to fix status */}
+      </div>
     </>
   );
 }
