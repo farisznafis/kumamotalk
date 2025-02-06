@@ -14,13 +14,15 @@
     "face-api.js": "^0.22.2",
     "next": "15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-mic": "^12.4.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-mic": "^12.4.6",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
