@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@next/font": "^14.2.15",
-    "face-api.js": "^0.20.0",
+    "@tensorflow/tfjs-core": "^4.22.0",
+    "face-api.js": "^0.22.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
