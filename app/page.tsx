@@ -11,6 +11,7 @@ import BackgroundCircles, { RedCircles } from "./components/RedCircles";
 import ConversationArea from "./components/ConversationArea";
 import MicRecorder from "./components/MicRecorder";
 import BackgroundMusic from "./components/BackgroundMusic";
+import FaceDetection from "./components/FaceDetection";
 // import FaceDetection from "./components/FaceDetection";
 
 export default function Home() {
@@ -75,7 +76,7 @@ export default function Home() {
           <div className="w-[194.41px] h-[233.78px] left-[964.62px] top-[52.25px] absolute origin-top-left rotate-[19deg] text-black text-[158px] font-bold font-['Noto Sans JP']">よ</div>
         </div>
       </div> */}
-      {/* <FaceDetection/> */}
+      <FaceDetection/>
 
     </main>
   )
