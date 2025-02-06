@@ -1,11 +1,13 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
+import MicRecorder from './MicRecorder';
 
 export default function FaceDetection() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -69,6 +71,9 @@ export default function FaceDetection() {
       // detect again
       faceapi.draw.drawDetections(canvas, resizedDetections);
 
+      // if face detected, update the setFaceDetected
+      setFaceDetected(resizedDetections.length > 0)
+
       // Keep detecting continuously
       requestAnimationFrame(detectFaces);
     };
@@ -79,10 +84,11 @@ export default function FaceDetection() {
   return (
     <>
       {/* Hidden video element (not shown in UI) */}
-      <video ref={videoRef} autoPlay muted playsInline className="absolute z-50" />
-      {modelsLoaded ? <p>Face API models loaded</p> : <p>Loading Face API...</p>}
+      <video ref={videoRef} autoPlay muted playsInline className="absolute z-50 bottom-0 left-0" />
+      {modelsLoaded ? <p className='hidden'>Face API models loaded</p> : <p className='hidden'>Loading Face API...</p>}
 
-      <canvas ref={canvasRef} className='absolute z-50'/>
+      <canvas ref={canvasRef} className='absolute z-50 bottom-0 left-0'/>
+      <MicRecorder faceDetected={faceDetected}/> {/* change to true/false if want to fix status */}
     </>
   );
 }

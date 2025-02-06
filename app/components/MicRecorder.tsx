@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-export default function MicRecorder() {
+interface MicRecorderProps {
+  faceDetected: boolean;
+}
+
+export default function MicRecorder({ faceDetected }: MicRecorderProps) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-[10vh] z-20">
+    <div className="flex flex-col items-center justify-center space-y-[5vh] z-20">
       {/* Teks Jepang */}
       <p className="text-white text-[36px] font-bold">質問してください</p>
 
@@ -11,8 +15,13 @@ export default function MicRecorder() {
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="w-6 bg-white rounded-full animate-wave"
-            style={{ animationDelay: `${i * 0.2}s` }}
+            className={`w-6 bg-white rounded-full ${
+              faceDetected ? 'animate-wave' : 'animate-static' // ✨ Animasi berubah
+            }`}
+            style={{
+              animationDelay: `${i * 0.2}s`,
+              transition: 'height 3s ease, transform 3s ease', // Smooth transition
+            }}
           ></div>
         ))}
       </div>
@@ -29,9 +38,22 @@ export default function MicRecorder() {
             transform: translateY(-50%);
           }
         }
+
+        @keyframes static {
+          0%, 100% {
+            height: 10px;
+            transform: translateY(-50%);
+          }
+        }
+
         .animate-wave {
           transform-origin: center;
           animation: wave 1s infinite ease-in-out;
+        }
+
+        .animate-static {
+          transform-origin: center;
+          animation: static 1s infinite ease-in-out;
         }
       `}</style>
     </div>
