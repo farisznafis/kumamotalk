@@ -1,3 +1,13 @@
+## Library and Dependencies Needed
+This is the command that I ran
+```
+npm install @next-font --force
+npm install @tensorflow/tfjs-core --force
+pip install fastapi
+npm install react-mic --force
+npm install --save-dev @types/react-mic --force
+```
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
