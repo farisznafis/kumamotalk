@@ -12,41 +12,96 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
   const [audioURL, setAudioURL] = useState<string>(''); // Menyimpan URL audio yang bisa diputar
   const [timerStarted, setTimerStarted] = useState(false); // Menyimpan status timer
   const [messageShown, setMessageShown] = useState(false); // Menyimpan status apakah pesan sudah muncul
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [recordFinished, setRecordFinished] = useState(false);
+  const [canRecordAgain, setCanRecordAgain] = useState(true);
 
   // Memulai atau menghentikan perekaman berdasarkan deteksi wajah
   useEffect(() => {
-    if (faceDetected && !timerStarted && !messageShown) {
+    if (faceDetected && !timerStarted && canRecordAgain) {
       setRecording(true); // Mulai rekam jika wajah terdeteksi
       setMessageShown(true); // Tampilkan pesan
       setTimerStarted(true); // Menandakan timer dimulai
+      
+      setRecordFinished(false);
       setTimeout(() => {
-        setRecording(false); // Hentikan rekam setelah 10 detik
+        setRecording(false); // stop record after 10 second
         setTimerStarted(false); // Reset timer
-      }, 10000); // 10 detik timer
+        // setMessageShown(false); // reset message so can record again
+        setCanRecordAgain(false);
+
+        // prevent message gone after record
+        if (!recordFinished) {
+          setMessageShown(false);
+        }
+
+      }, 10000); // 10 second timer
     }
-  }, [faceDetected, timerStarted, messageShown]);
+
+    // reset URL before update URL
+    if (recording) {
+      setAudioURL("");
+    }
+  }, [faceDetected, timerStarted, canRecordAgain]);
 
   // Saat perekaman selesai, simpan blob audio dan buat URL untuk memutar suara
   const onStopRecording = (recordedData: any) => {
     console.log('Recording stopped. Audio Blob:', recordedData);
-    setRecordedBlob(recordedData.blob); // Simpan data audio dalam bentuk Blob
-    const audioURL = URL.createObjectURL(recordedData.blob); // Buat URL untuk memutar audio
-    setAudioURL(audioURL); // Simpan URL audio
-  };
+    
+    setAudioURL("")
+    const newAudioBlob = recordedData.blob;
+    setRecordedBlob(newAudioBlob);
+
+    const newAudioURL = URL.createObjectURL(newAudioBlob);
+  
+    console.log('Generated Audio URL:', newAudioURL);
+  
+    // set processing condition to true
+    setIsProcessing(true);
+  
+    setTimeout(() => {
+      setAudioURL(newAudioURL);
+      console.log('start delay for audio', newAudioURL);
+      setIsProcessing(false);
+      setRecordFinished(true);
+
+      // make sure message shown after record done
+      setMessageShown(true);
+      
+      // trigger automatic download
+      const downloadLink = document.createElement('a');
+      downloadLink.href = newAudioURL;
+      downloadLink.download = `recording_${Date.now()}.wav`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }, 3000);
+
+    setTimeout(() => {
+      setCanRecordAgain(true);
+      setMessageShown(false);
+    }, 20000);
+
+    setRecordFinished(false);
+  };  
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-[5vh] z-20">
-      {/* Teks Jepang */}
-      {messageShown && (
-        <p className="text-white text-[36px] font-bold">質問してください</p>
-      )}
+    <div className="flex flex-col items-center justify-center space-y-[2vh] z-20 relative">
+      <p
+        className={`text-white text-[36px] font-bold transition-opacity duration-300 ${
+          messageShown ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      >
+        {recordFinished ? "next record.." : "質問してください"}
+      </p>
 
-      {/* Animasi Gelombang Suara */}
+
+      {/* Animasi Gelombang Suara
       <div className="flex space-x-2 h-16">
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className={`w-6 bg-white rounded-full ${
+            className={`w-3 bg-white rounded-full ${
               faceDetected && recording ? 'animate-wave' : 'animate-static' // Animasi berubah berdasarkan faceDetected
             }`}
             style={{
@@ -55,28 +110,30 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
             }}
           ></div>
         ))}
-      </div>
+      </div> */}
 
       {/* ReactMic untuk merekam suara */}
-      <ReactMic
-        record={recording} // Status perekaman berdasarkan faceDetected
-        className="react-mic"
-        onStop={onStopRecording}
-        mimeType="audio/wav"
-      />
+      <div className='w-[400px] h-[100px] rounded-full overflow-hidden flex items-center justify-center'>
+        <ReactMic
+          record={recording} // Status perekaman berdasarkan faceDetected
+          className="react-mic"
+          onStop={onStopRecording}
+          mimeType="audio/wav"
+        />
+      </div>
 
       {/* Memutar hasil rekaman suara */}
       {audioURL && (
         <div className="mt-5">
-          <p className="text-white text-xl">Playback Rekaman:</p>
+          <p className="text-white text-xl hidden">Playback Rekaman:</p>
           <audio controls>
-            <source src={audioURL} type="audio/wav" />
+            <source src={audioURL} type="audio/wav"/>
             Your browser does not support the audio element.
           </audio>
         </div>
       )}
 
-      {/* Style animasi */}
+      {/* Style animasi
       <style jsx>{`
         @keyframes wave {
           0%, 100% {
@@ -105,7 +162,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
           transform-origin: center;
           animation: static 1s infinite ease-in-out;
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 }

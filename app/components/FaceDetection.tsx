@@ -74,11 +74,11 @@ export default function FaceDetection() {
 
   return (
     <>
-      <video ref={videoRef} autoPlay muted playsInline className="hidden" />
-      {modelsLoaded ? <p>Face API models loaded</p> : <p>Loading Face API...</p>}
+      <video ref={videoRef} autoPlay muted playsInline className="fixed bottom-0 left-0 w-[200px] h-[200px] z-50" />
+      {modelsLoaded ? <p className='hidden'>Face API models loaded</p> : <p>Loading Face API...</p>}
 
       {/* Show message when face is detected */}
-      {faceDetected && <p className="text-white text-[36px] font-bold">Silakan ngomong</p>}
+      {faceDetected && <p className="text-white text-[36px] font-bold hidden">Silakan ngomong</p>}
 
       {/* Pass faceDetected and recording status to MicRecorder */}
       <MicRecorder faceDetected={faceDetected && recording} />
