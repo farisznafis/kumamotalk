@@ -14,7 +14,7 @@ export default function LanguageSelector() {
   const [selectedLanguage, setSelectedLanguage] = useState("日本語");
 
   return (
-    <div className="fixed flex flex-col justify-center items-center space-y-20 z-20 scale-50 bottom-0">
+    <div className="fixed flex flex-col justify-center items-center space-y-20 z-20 scale-50 bottom-0 w-full">
       {/* Komponen pesan */}
       <LanguageMessage />
 

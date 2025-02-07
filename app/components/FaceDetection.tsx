@@ -12,7 +12,8 @@ export default function FaceDetection() {
   useEffect(() => {
     const loadModels = async () => {
       try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
+        // await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
+        await faceapi.nets.ssdMobilenetv1.loadFromUri('/models/')
         setModelsLoaded(true);
         startCamera();
       } catch (error) {
@@ -44,8 +45,9 @@ export default function FaceDetection() {
 
     const detectFaces = async () => {
       const detections = await faceapi.detectAllFaces(
-        videoRef.current,
-        new faceapi.TinyFaceDetectorOptions()
+        videoRef.current as HTMLVideoElement,
+        // new faceapi.TinyFaceDetectorOptions()
+        new faceapi.SsdMobilenetv1Options()
       );
 
       console.log('Face detection result:', detections);
@@ -74,8 +76,17 @@ export default function FaceDetection() {
 
   return (
     <>
-      <video ref={videoRef} autoPlay muted playsInline className="fixed bottom-0 left-0 w-[200px] h-[200px] z-50 hidden" />
-      {modelsLoaded ? <p className='hidden'>Face API models loaded</p> : <p className='hidden'>Loading Face API...</p>}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="
+          // absolute bottom-0 left-0 w-full sm:w-[200px] sm:h-[200px] z-50
+          hidden
+        "
+      />
+      {modelsLoaded ? <p className="hidden">Face API models loaded</p> : <p className="hidden">Loading Face API...</p>}
 
       {/* Show message when face is detected */}
       {faceDetected && <p className="text-white text-[36px] font-bold hidden">Silakan ngomong</p>}
