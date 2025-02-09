@@ -1,103 +1,96 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { ReactMic } from 'react-mic';
+import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import { convertSpeechToTextResponse } from '../utils/api';
+
+const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), { ssr: false });
 
 interface MicRecorderProps {
-  faceDetected: boolean;
+    faceDetected: boolean;
 }
 
 export default function MicRecorder({ faceDetected }: MicRecorderProps) {
-  const [recording, setRecording] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [audioURL, setAudioURL] = useState<string>('');
-  const [timerStarted, setTimerStarted] = useState(false);
-  const [messageShown, setMessageShown] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [recordFinished, setRecordFinished] = useState(false);
-  const [canRecordAgain, setCanRecordAgain] = useState(true);
+    const [recording, setRecording] = useState(false);
+    const [audioURL, setAudioURL] = useState<string>('');
+    const [messageShown, setMessageShown] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [recordFinished, setRecordFinished] = useState(false);
+    const [canRecordAgain, setCanRecordAgain] = useState(true);
+    const [chatResponse, setChatResponse] = useState('');
 
-  useEffect(() => {
-    if (faceDetected && !timerStarted && canRecordAgain) {
-      setRecording(true);
-      setMessageShown(true);
-      setTimerStarted(true);
+   /**
+   * Automatically starts and stops recording based on face detection
+   */
+    useEffect(() => {
+        if (faceDetected && canRecordAgain) {
+            setRecording(true);
+            setMessageShown(true);
+            setRecordFinished(false);
 
-      setRecordFinished(false);
-      setTimeout(() => {
-        setRecording(false);
-        setTimerStarted(false);
-        setCanRecordAgain(false);
-
-        if (!recordFinished) {
-          setMessageShown(false);
+            setTimeout(() => {
+              setRecording(false);
+              setCanRecordAgain(false);
+            }, 10000);
         }
-      }, 10000);
-    }
 
-    if (recording) {
-      setAudioURL("");
-    }
-  }, [faceDetected, timerStarted, canRecordAgain]);
+        if (recording) {
+            setAudioURL('');
+        }
+    }, [faceDetected, canRecordAgain]);
 
-  const onStopRecording = (recordedData: any) => {
-    const newAudioBlob = recordedData.blob;
-    setRecordedBlob(newAudioBlob);
+    /**
+     * Handles processing of recorded audio and API response
+     */
+    const onStopRecording = useCallback(async (recordedData: any) => {
+        const newAudioBlob = recordedData.blob;
+        const newAudioURL = URL.createObjectURL(newAudioBlob);
+        
+        setIsProcessing(true);
+        setAudioURL(newAudioURL);
 
-    const newAudioURL = URL.createObjectURL(newAudioBlob);
+        try {
+            const response = await convertSpeechToTextResponse(newAudioBlob);
 
-    setIsProcessing(true);
+            if (response.success) {
+                setChatResponse(response.response);
+            } else {
+                setChatResponse(response.error);
+                console.error('Upload failed:', response.error);
+            }
+        } catch (error) {
+            console.error('Error processing audio:', error);
+            setChatResponse('An error occurred.');
+        } finally {
+            setIsProcessing(false);
+            setRecordFinished(true);
+            setMessageShown(true);
 
-    setTimeout(() => {
-      setAudioURL(newAudioURL);
-      setIsProcessing(false);
-      setRecordFinished(true);
+            setTimeout(() => {
+                setCanRecordAgain(true);
+                setMessageShown(false);
+            }, 20000);
+        }
+    }, []);
 
-      setMessageShown(true);
+    return (
+        <div className="flex flex-col items-center justify-center space-y-[2vh] z-20 relative">
+            <p className={`text-white text-[36px] font-bold transition-opacity duration-300 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                {recordFinished ? chatResponse : '質問してください'}
+            </p>
 
-      const downloadLink = document.createElement('a');
-      downloadLink.href = newAudioURL;
-      downloadLink.download = `recording_${Date.now()}.wav`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }, 3000);
+            <div className="w-full sm:w-[400px] h-[100px] rounded-full overflow-hidden flex items-center justify-center">
+                <ReactMic record={recording} className="react-mic" onStop={onStopRecording} mimeType="audio/wav" />
+            </div>
 
-    setTimeout(() => {
-      setCanRecordAgain(true);
-      setMessageShown(false);
-    }, 20000);
-
-    setRecordFinished(false);
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-[2vh] z-20 relative">
-      <p
-        className={`text-white text-[36px] font-bold transition-opacity duration-300 ${
-          messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-      >
-        {recordFinished ? 'next record..' : '質問してください'}
-      </p>
-
-      <div className="w-full sm:w-[400px] h-[100px] rounded-full overflow-hidden flex items-center justify-center">
-        <ReactMic
-          record={recording}
-          className="react-mic"
-          onStop={onStopRecording}
-          mimeType="audio/wav"
-        />
-      </div>
-
-      {audioURL && (
-        <div className="mt-5">
-          <p className="text-white text-xl hidden">Playback Rekaman:</p>
-          {/* <audio controls>
-            <source src={audioURL} type="audio/wav" />
-            Your browser does not support the audio element.
-          </audio> */}
+            {audioURL && (
+                <div className="mt-5">
+                    <p className="text-white text-xl hidden">Playback Rekaman:</p>
+                    {/* <audio controls>
+                        <source src={audioURL} type="audio/wav" />
+                        Your browser does not support the audio element.
+                    </audio> */}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
