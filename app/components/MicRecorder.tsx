@@ -17,6 +17,9 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [recordFinished, setRecordFinished] = useState(false);
     const [canRecordAgain, setCanRecordAgain] = useState(true);
     const [chatResponse, setChatResponse] = useState('');
+    const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+    const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+    const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
    /**
    * Automatically starts and stops recording based on face detection
@@ -37,6 +40,28 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
             setAudioURL('');
         }
     }, [faceDetected, canRecordAgain]);
+
+    // Get list of microphones
+    useEffect(() => {
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const audioDevices = devices.filter(device => device.kind === 'audioinput');
+                setDevices(audioDevices);
+                if (audioDevices.length > 0) {
+                    setSelectedDevice(audioDevices[0].deviceId); // Select first mic by default
+                }
+            })
+            .catch(error => console.error("Error fetching devices:", error));
+    }, []);
+
+    // Update media stream when the mic selection changes
+    useEffect(() => {
+        if (selectedDevice) {
+            navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: selectedDevice } } })
+                .then(stream => setMediaStream(stream))
+                .catch(error => console.error("Error accessing microphone:", error));
+        }
+    }, [selectedDevice]);
 
     /**
      * Handles processing of recorded audio and API response
@@ -73,14 +98,28 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-[2vh] z-20 relative">
-            <p className={`text-white text-[36px] font-bold transition-opacity duration-300 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                {recordFinished ? chatResponse : '質問してください'}
+        <div className="flex flex-col items-center justify-center space-y-8 z-20 relative">
+            <p className={`text-white text-[24px] transition-opacity duration-300 w-[700px] text-center h-6 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                {recordFinished ? "これはさまざまな言語をテストするために設計されたシンプルなテキストテンプレートです。200文字の制限内に収まるようにテキストの長さとフォーマットを確認することが重要です。"
+                :
+                <span className='text-[36px]'>質問してください</span>}
             </p>
 
-            <div className="w-full sm:w-[400px] h-[100px] rounded-full overflow-hidden flex items-center justify-center">
+            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[15vh] relative">
                 <ReactMic record={recording} className="react-mic" onStop={onStopRecording} mimeType="audio/wav" />
             </div>
+            {/* Dropdown to select microphone */}
+            <select
+                value={selectedDevice || ''}
+                onChange={e => setSelectedDevice(e.target.value)}
+                className="fixed top-0 right-0 p-2 border rounded text-black"
+            >
+                {devices.map(device => (
+                    <option key={device.deviceId} value={device.deviceId}>
+                        {device.label || `Microphone ${devices.indexOf(device) + 1}`}
+                    </option>
+                ))}
+            </select>
 
             {audioURL && (
                 <div className="mt-5">
