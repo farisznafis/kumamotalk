@@ -100,9 +100,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     return (
         <div className="flex flex-col items-center justify-center space-y-8 z-20 relative">
             <p className={`text-white text-[24px] transition-opacity duration-300 w-[700px] text-center h-6 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                {recordFinished ? "これはさまざまな言語をテストするために設計されたシンプルなテキストテンプレートです。200文字の制限内に収まるようにテキストの長さとフォーマットを確認することが重要です。"
-                :
-                <span className='text-[36px]'>質問してください</span>}
+                {recordFinished ? chatResponse : <span className='text-[36px]'>質問してください</span>}
             </p>
 
             <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[15vh] relative">
