@@ -12,8 +12,8 @@ export default function FaceDetection() {
     useEffect(() => {
         const loadModels = async () => {
         try {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
-            // await faceapi.nets.ssdMobilenetv1.loadFromUri('/models/')
+            // await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models/')
             setModelsLoaded(true);
             startCamera();
         } catch (error) {
@@ -46,8 +46,8 @@ export default function FaceDetection() {
         const detectFaces = async () => {
         const detections = await faceapi.detectAllFaces(
             videoRef.current as HTMLVideoElement,
-            new faceapi.TinyFaceDetectorOptions()
-            // new faceapi.SsdMobilenetv1Options()
+            // new faceapi.TinyFaceDetectorOptions()
+            new faceapi.SsdMobilenetv1Options()
         );
 
         console.log('Face detection result:', detections);
