@@ -8,11 +8,10 @@ const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), 
 
 interface MicRecorderProps {
     faceDetected: boolean;
-    setFaceDetected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-export default function MicRecorder({ faceDetected, setFaceDetected }: MicRecorderProps) {
+export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState<string>('');
     const [messageShown, setMessageShown] = useState(false);
@@ -41,28 +40,20 @@ export default function MicRecorder({ faceDetected, setFaceDetected }: MicRecord
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
     
-        if (!faceDetected && !isProcessing) { // Don't run if processing
+        if (!faceDetected) {
             interval = setInterval(() => {
                 const randomIndex = Math.floor(Math.random() * standbyMessages.length);
                 setStandbyMessage(standbyMessages[randomIndex]);
             }, 3000);
         } else {
             setStandbyMessage("しゃべってくださいもん！");
-            if (interval) clearInterval(interval);
         }
     
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [faceDetected]); // Only depend on faceDetected
+    }, [faceDetected]);
     
-    useEffect(() => {
-        if (isProcessing) {
-            setStandbyMessage("くまモン考え中");
-        } else {
-            setStandbyMessage("しゃべってくださいもん！");
-        }
-    }, [isProcessing]); // Separate hook for isProcessing    
 
     /**
  * Automatically starts and stops recording based on face detection
@@ -136,19 +127,11 @@ export default function MicRecorder({ faceDetected, setFaceDetected }: MicRecord
 
             setTimeout(() => {
                 setCanRecordAgain(true);
-                setFaceDetected(false)
-                setTimeout(() => {
-                    if (!faceDetected) {  // Pastikan hanya berjalan jika wajah tidak terdeteksi
-                        const randomIndex = Math.floor(Math.random() * standbyMessages.length);
-                        setStandbyMessage(standbyMessages[randomIndex]);
-                    }
-                }, 3000); // Sesuaikan dengan jeda standby message
-                
                 setMessageShown(false);
                 setStandbyMessage("しゃべってくださいもん！");
             }, 20000);
         }       
-    }, [setFaceDetected]);
+    }, []);
 
     return (
         <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-8">

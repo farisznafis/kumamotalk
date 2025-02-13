@@ -88,7 +88,7 @@ export default function FaceDetection() {
       {modelsLoaded ? <p className='hidden'>Face API models loaded</p> : <p className='hidden'>Loading Face API...</p>}
 
       <canvas ref={canvasRef} className='absolute z-50 bottom-0 left-0'/>
-      <MicRecorder faceDetected={faceDetected}/> {/* change to true/false if want to fix status */}
+      <MicRecorder faceDetected={faceDetected} setFaceDetected={setFaceDetected}/> {/* change to true/false if want to fix status */}
     </>
   );
 }
