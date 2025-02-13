@@ -2,7 +2,7 @@ export default function Header() {
     return (
       <img
         src="../kumamondayo.svg"
-        className="fixed h-auto z-50 opacity-100 scale-[50%] top-0"
+        className="absolute h-auto z-50 opacity-100 scale-[50%] -top-12"
         alt="Header Text"
       />
     );

@@ -8,10 +8,11 @@ const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), 
 
 interface MicRecorderProps {
     faceDetected: boolean;
+    setFaceDetected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-export default function MicRecorder({ faceDetected }: MicRecorderProps) {
+export default function MicRecorder({ faceDetected, setFaceDetected }: MicRecorderProps) {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState<string>('');
     const [messageShown, setMessageShown] = useState(false);
@@ -40,20 +41,28 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
     
-        if (!faceDetected) {
+        if (!faceDetected && !isProcessing) { // Don't run if processing
             interval = setInterval(() => {
                 const randomIndex = Math.floor(Math.random() * standbyMessages.length);
                 setStandbyMessage(standbyMessages[randomIndex]);
             }, 3000);
         } else {
-            // If face is detected, show "しゃべってくださいもん！"
             setStandbyMessage("しゃべってくださいもん！");
+            if (interval) clearInterval(interval);
         }
     
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [faceDetected]);    
+    }, [faceDetected]); // Only depend on faceDetected
+    
+    useEffect(() => {
+        if (isProcessing) {
+            setStandbyMessage("くまモン考え中");
+        } else {
+            setStandbyMessage("しゃべってくださいもん！");
+        }
+    }, [isProcessing]); // Separate hook for isProcessing    
 
     /**
  * Automatically starts and stops recording based on face detection
@@ -127,24 +136,39 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
 
             setTimeout(() => {
                 setCanRecordAgain(true);
+                setFaceDetected(false)
+                setTimeout(() => {
+                    if (!faceDetected) {  // Pastikan hanya berjalan jika wajah tidak terdeteksi
+                        const randomIndex = Math.floor(Math.random() * standbyMessages.length);
+                        setStandbyMessage(standbyMessages[randomIndex]);
+                    }
+                }, 3000); // Sesuaikan dengan jeda standby message
+                
                 setMessageShown(false);
                 setStandbyMessage("しゃべってくださいもん！");
             }, 20000);
-        }
-    }, []);
+        }       
+    }, [setFaceDetected]);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-8 z-20 relative">
-            <p className={`text-white text-[24px] transition-opacity duration-300 w-[700px] text-center h-6 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-8">
+            <p className={`text-white text-[32px] transition-opacity duration-300 w-[700px] text-center h-6 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
                 {/* {isProcessing ? "Kumamon thinking..." : recordFinished ? chatResponse : <span className='text-[36px]'>{standbyMessage}</span>} */}
-                <span className={isProcessing ? 'text-[36px]' : ''}>
-                    {isProcessing ? "くまモン考え中" : recordFinished ? chatResponse : <span className='text-[36px]'>{standbyMessage}</span>}
+                <span className={isProcessing ? 'text-[42px]' : ''}>
+                    {isProcessing ? "くまモン考え中" : recordFinished ? "これはさまざまな言語をテストするために設計されたシンプルなテキストテンプレートです。200文字の制限内に収まるようにテキストの長さとフォーマットを確認することが重要です。" : <span className='text-[42px]'>{standbyMessage}</span>}
                 </span>
             </p>
 
 
-            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[15vh] relative">
-                <ReactMic record={recording} className="react-mic" onStop={onStopRecording} mimeType="audio/wav" />
+            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[22vh] relative">
+                <ReactMic
+                    record={recording}
+                    className="react-mic"
+                    onStop={onStopRecording}
+                    mimeType="audio/wav"
+                    backgroundColor='black'
+                    strokeColor='white'
+                />
             </div>
             {/* Dropdown to select microphone */}
             <select

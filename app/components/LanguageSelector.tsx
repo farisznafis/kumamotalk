@@ -26,8 +26,8 @@ export default function LanguageSelector() {
             onClick={() => setSelectedLanguage(lang.code)}
             className={`px-6 py-2 rounded-full text-lg font-medium transition-all duration-300 border-2 ${
               selectedLanguage === lang.code
-                ? "bg-white text-black border-transparent"
-                : "bg-black text-white border-white"
+                ? "bg-black text-white border-transparent"
+                : "bg-white text-black border-black"
             }`}
           >
             {lang.label}
