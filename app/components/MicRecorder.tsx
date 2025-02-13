@@ -9,6 +9,49 @@ interface MicRecorderProps {
     faceDetected: boolean;
 }
 
+// response example
+const exampleResponse = {
+    data: {
+        chat_response: [
+            {
+                text: "Oh, I love Kumamoto's famous basashi (raw horse meat) and sweet potatoes!",
+                time_range: 3
+            },
+            {
+                text: "They're delicious and bring joy to my bear heart, mon!",
+                time_range: 1.5
+            },
+            {
+                text: "What's your favorite food, mon?",
+                time_range: 1
+            }
+        ]
+    }
+};
+
+const ChatComponent = ({ chatData }: { chatData: any }) => {
+    const [displayedText, setDisplayedText] = useState<string>('');
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (currentIndex < chatData.data.chat_response.length) {
+            const currentMessage = chatData.data.chat_response[currentIndex];
+            const timeoutId = setTimeout(() => {
+                setDisplayedText(currentMessage.text);
+                setCurrentIndex((prev) => prev + 1);
+            }, currentMessage.time_range * 1000);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [currentIndex, chatData]);
+
+    return (
+        <div className="flex items-center justify-center h-full text-white text-center">
+            <p className="text-[52px] opacity-100 transition-opacity duration-500 leading-[1.15] -mb-[20px] top-[5vh]">{displayedText}</p>
+        </div>
+    );
+};
+
 export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState<string>('');
@@ -16,6 +59,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [canRecordAgain, setCanRecordAgain] = useState(true);
     const [chatResponse, setChatResponse] = useState('');
     const [showChatResponse, setShowChatResponse] = useState(false);
+    const [chatData, setChatData] = useState<any | null>(null);
 
     const standbyMessages = [
         "こんにちはもん！",
@@ -25,7 +69,7 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [standbyMessage, setStandbyMessage] = useState(() => {
         const randomIndex = Math.floor(Math.random() * standbyMessages.length);
         return standbyMessages[randomIndex];
-    });    
+    });
 
     console.log("Face Detected Status:", faceDetected);
 
@@ -75,13 +119,15 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         setAudioURL(newAudioURL);
 
         try {
-            const response = await convertSpeechToTextResponse(newAudioBlob);
+            // Simulate using exampleResponse instead of fetching from backend
+            const response = exampleResponse;
 
-            if (response.success) {
-                setChatResponse(response.response);
+            if (response.data) {
+                setChatResponse(response.data.chat_response.map((res) => res.text).join(' '));
+                setChatData(response); // Set chatData to the response
             } else {
-                setChatResponse(response.error);
-                console.error('Upload failed:', response.error);
+                setChatResponse('An error occurred.');
+                console.error('Upload failed:', response);
             }
         } catch (error) {
             console.error('Error processing audio:', error);
@@ -98,18 +144,18 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[48px]">
-            <p className="text-white text-[28px] transition-opacity duration-300 w-[750px] text-center h-6">
+        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[28px]">
+            <div className="text-white text-[28px] transition-opacity duration-300 w-[700px] text-center h-6">
                 {isProcessing ? (
-                    <span className="text-[38px]">くまモン考え中...</span>
-                ) : showChatResponse ? (
-                    <span className="text-[34px] leading-3">{chatResponse}</span>
+                    <span className="text-[58px]">くまモン考え中...</span>
+                ) : showChatResponse && chatData ? (
+                    <ChatComponent chatData={chatData} />
                 ) : (
-                    <span className="text-[38px]">{standbyMessage}</span>
+                    <span className="text-[58px]">{standbyMessage}</span>
                 )}
-            </p>
+            </div>
 
-            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[22vh] relative">
+            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[18vh] relative">
                 <ReactMic
                     record={recording}
                     className="react-mic"
