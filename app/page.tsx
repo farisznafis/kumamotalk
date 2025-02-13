@@ -18,7 +18,7 @@ export default function Home() {
       <LanguageSelector/>
       <ConversationArea/> 
       <WaveBackground/>
-      <BackgroundMusic/>
+      {/* <BackgroundMusic/> */}
       <FaceDetection/>
     </main>
   )

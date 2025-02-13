@@ -92,7 +92,7 @@ export default function FaceDetection() {
             {faceDetected && <p className="text-white text-[36px] font-bold hidden">Silakan ngomong</p>}
 
             {/* Pass faceDetected and recording status to MicRecorder */}
-            <MicRecorder faceDetected={faceDetected && recording} setFaceDetected={setFaceDetected} />
+            <MicRecorder faceDetected={faceDetected && recording} />
         </>
     );
 }   

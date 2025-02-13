@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { convertSpeechToTextResponse } from '../utils/api';
-import { text } from 'stream/consumers';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), { ssr: false });
 
@@ -10,37 +9,31 @@ interface MicRecorderProps {
     faceDetected: boolean;
 }
 
-
 export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState<string>('');
-    const [messageShown, setMessageShown] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [recordFinished, setRecordFinished] = useState(false);
     const [canRecordAgain, setCanRecordAgain] = useState(true);
     const [chatResponse, setChatResponse] = useState('');
-    const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
-    const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-    const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-    
+    const [showChatResponse, setShowChatResponse] = useState(false);
+
     const standbyMessages = [
         "こんにちはもん！",
         "質問してねもん！",
         "展示会どうだったもん？"
     ];
-    const [standbyMessage, setStandbyMessage] = useState("しゃべってくださいもん！"); 
+    const [standbyMessage, setStandbyMessage] = useState(() => {
+        const randomIndex = Math.floor(Math.random() * standbyMessages.length);
+        return standbyMessages[randomIndex];
+    });    
+
     console.log("Face Detected Status:", faceDetected);
 
-    // initialize message visibility
-    useEffect(() => {
-        setMessageShown(true);
-    }, []);
-
-    // if face not detected, show random text
+    // Randomize standby messages
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-    
-        if (!faceDetected) {
+
+        if (!faceDetected && !showChatResponse) {
             interval = setInterval(() => {
                 const randomIndex = Math.floor(Math.random() * standbyMessages.length);
                 setStandbyMessage(standbyMessages[randomIndex]);
@@ -48,22 +41,18 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         } else {
             setStandbyMessage("しゃべってくださいもん！");
         }
-    
+
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [faceDetected]);
-    
+    }, [faceDetected, showChatResponse]);
 
     /**
- * Automatically starts and stops recording based on face detection
- */
+     * Automatically starts and stops recording based on face detection
+     */
     useEffect(() => {
         if (faceDetected && canRecordAgain) {
             setRecording(true);
-            setMessageShown(true);
-            setRecordFinished(false);
-
             setTimeout(() => {
                 setRecording(false);
                 setCanRecordAgain(false);
@@ -75,28 +64,6 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         }
     }, [faceDetected, canRecordAgain]);
 
-    // Get list of microphones
-    useEffect(() => {
-        navigator.mediaDevices.enumerateDevices()
-            .then(devices => {
-                const audioDevices = devices.filter(device => device.kind === 'audioinput');
-                setDevices(audioDevices);
-                if (audioDevices.length > 0) {
-                    setSelectedDevice(audioDevices[0].deviceId); // Select first mic by default
-                }
-            })
-            .catch(error => console.error("Error fetching devices:", error));
-    }, []);
-
-    // Update media stream when the mic selection changes
-    useEffect(() => {
-        if (selectedDevice) {
-            navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: selectedDevice } } })
-                .then(stream => setMediaStream(stream))
-                .catch(error => console.error("Error accessing microphone:", error));
-        }
-    }, [selectedDevice]);
-
     /**
      * Handles processing of recorded audio and API response
      */
@@ -106,7 +73,6 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         
         setIsProcessing(true);
         setAudioURL(newAudioURL);
-        setMessageShown(true);
 
         try {
             const response = await convertSpeechToTextResponse(newAudioBlob);
@@ -122,26 +88,26 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
             setChatResponse('An error occurred.');
         } finally {
             setIsProcessing(false);
-            setRecordFinished(true);
-            // setMessageShown(true);
+            setShowChatResponse(true); // Show chat response
 
             setTimeout(() => {
+                setShowChatResponse(false); // Hide chat response
                 setCanRecordAgain(true);
-                setMessageShown(false);
-                setStandbyMessage("しゃべってくださいもん！");
-            }, 20000);
+            }, 7000); // Show for 7 seconds
         }       
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-8">
-            <p className={`text-white text-[32px] transition-opacity duration-300 w-[700px] text-center h-6 ${messageShown ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                {/* {isProcessing ? "Kumamon thinking..." : recordFinished ? chatResponse : <span className='text-[36px]'>{standbyMessage}</span>} */}
-                <span className={isProcessing ? 'text-[42px]' : ''}>
-                    {isProcessing ? "くまモン考え中" : recordFinished ? "これはさまざまな言語をテストするために設計されたシンプルなテキストテンプレートです。200文字の制限内に収まるようにテキストの長さとフォーマットを確認することが重要です。" : <span className='text-[42px]'>{standbyMessage}</span>}
-                </span>
+        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[48px]">
+            <p className="text-white text-[28px] transition-opacity duration-300 w-[750px] text-center h-6">
+                {isProcessing ? (
+                    <span className="text-[38px]">くまモン考え中...</span>
+                ) : showChatResponse ? (
+                    <span className="text-[34px] leading-3">{chatResponse}</span>
+                ) : (
+                    <span className="text-[38px]">{standbyMessage}</span>
+                )}
             </p>
-
 
             <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[22vh] relative">
                 <ReactMic
@@ -149,32 +115,10 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
                     className="react-mic"
                     onStop={onStopRecording}
                     mimeType="audio/wav"
-                    backgroundColor='black'
-                    strokeColor='white'
+                    backgroundColor="black"
+                    strokeColor="white"
                 />
             </div>
-            {/* Dropdown to select microphone */}
-            <select
-                value={selectedDevice || ''}
-                onChange={e => setSelectedDevice(e.target.value)}
-                className="fixed top-0 right-0 p-2 border rounded text-black"
-            >
-                {devices.map(device => (
-                    <option key={device.deviceId} value={device.deviceId}>
-                        {device.label || `Microphone ${devices.indexOf(device) + 1}`}
-                    </option>
-                ))}
-            </select>
-
-            {audioURL && (
-                <div className="mt-5">
-                    <p className="text-white text-xl hidden">Playback Rekaman:</p>
-                    {/* <audio controls>
-                        <source src={audioURL} type="audio/wav" />
-                        Your browser does not support the audio element.
-                    </audio> */}
-                </div>
-            )}
         </div>
     );
 }
