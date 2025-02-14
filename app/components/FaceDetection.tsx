@@ -49,9 +49,6 @@ export default function FaceDetection() {
             // new faceapi.TinyFaceDetectorOptions()
             new faceapi.SsdMobilenetv1Options()
         );
-
-        console.log('Face detection result:', detections);
-
         // If face is detected, start recording
         if (detections.length > 0 && !faceDetected) {
             setFaceDetected(true);
@@ -95,4 +92,4 @@ export default function FaceDetection() {
             <MicRecorder faceDetected={faceDetected && recording} />
         </>
     );
-}
+}   

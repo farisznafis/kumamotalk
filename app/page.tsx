@@ -12,13 +12,13 @@ import FaceDetection from "./components/FaceDetection";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-center w-full h-full overflow-hidden bg-gray-100">
+    <main className="relative flex flex-col items-center justify-center w-full h-full overflow-hidden bg-gray-100">
       <Header/>
       {/* <MicRecorder faceDetected={faceDetected}/> */}
       <LanguageSelector/>
       <ConversationArea/> 
       <WaveBackground/>
-      <BackgroundMusic/>
+      {/* <BackgroundMusic/> */}
       <FaceDetection/>
     </main>
   )

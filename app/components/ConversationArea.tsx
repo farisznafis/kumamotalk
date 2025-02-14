@@ -21,7 +21,7 @@
 export default function ConversationArea() {
   return (
     <img
-      src="../kumamon.svg"
+      src="../kumamon-2.svg"
       className="fixed opacity-100 z-10 bottom-0"
       alt="Header Text"
     />
