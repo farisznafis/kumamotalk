@@ -1,6 +1,11 @@
-export const convertSpeechToTextResponse = async (audioBlob: Blob) => {
+export const convertSpeechToTextResponse = async (audioBlob: Blob, language: string | null) => {
     const formData = new FormData();
     formData.append("file", audioBlob, `recording_${Date.now()}.wav`);
+    
+    // Append the language to the FormData, it can be null or undefined if not provided
+    if (language) {
+        formData.append("language", language);
+    }
 
     try {
         const response = await fetch(
@@ -15,10 +20,9 @@ export const convertSpeechToTextResponse = async (audioBlob: Blob) => {
         console.log("Response Data:", data);
 
         if (response.ok) {
-            return { success: true, response: data.response };
+            return { success: true, data: data.data };
         } else {
-            console.error("Error uploading file:", data.response);
-            return { success: false, error: data.response };
+            return { success: false, error: data };
         }
     } catch (error) {
         console.error("Error uploading file:", error);

@@ -36,8 +36,8 @@ const ChatComponent = ({ chatData }: { chatData: any }) => {
     useEffect(() => {
         if (currentIndex < chatData.data.chat_response.length) {
             const currentMessage = chatData.data.chat_response[currentIndex];
+            setDisplayedText(currentMessage.text);
             const timeoutId = setTimeout(() => {
-                setDisplayedText(currentMessage.text);
                 setCurrentIndex((prev) => prev + 1);
             }, currentMessage.time_range * 1000);
 
@@ -60,35 +60,36 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [chatResponse, setChatResponse] = useState('');
     const [showChatResponse, setShowChatResponse] = useState(false);
     const [chatData, setChatData] = useState<any | null>(null);
+    const [totalSeconds, setTotalSeconds] = useState(0);
 
     const standbyMessages = [
         "こんにちはもん！",
         "質問してねもん！",
         "展示会どうだったもん？"
     ];
-    const [standbyMessage, setStandbyMessage] = useState(() => {
-        const randomIndex = Math.floor(Math.random() * standbyMessages.length);
-        return standbyMessages[randomIndex];
-    });
 
-    console.log("Face Detected Status:", faceDetected);
+    // Initial default value to avoid hydration mismatch
+    const [standbyMessage, setStandbyMessage] = useState(standbyMessages[0]);
 
-    // Randomize standby messages
+    // Randomize standby messages after mounting on the client-side
     useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
+        // Check if running on the client-side (window object available)
+        if (typeof window !== "undefined") {
+            let interval: NodeJS.Timeout | null = null;
 
-        if (!faceDetected && !showChatResponse) {
-            interval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * standbyMessages.length);
-                setStandbyMessage(standbyMessages[randomIndex]);
-            }, 3000);
-        } else {
-            setStandbyMessage("しゃべってくださいもん！");
+            if (!faceDetected && !showChatResponse) {
+                interval = setInterval(() => {
+                    const randomIndex = Math.floor(Math.random() * standbyMessages.length);
+                    setStandbyMessage(standbyMessages[randomIndex]);
+                }, 3000);
+            } else {
+                setStandbyMessage("しゃべってくださいもん！");
+            }
+
+            return () => {
+                if (interval) clearInterval(interval);
+            };
         }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
     }, [faceDetected, showChatResponse]);
 
     /**
@@ -114,17 +115,21 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const onStopRecording = useCallback(async (recordedData: any) => {
         const newAudioBlob = recordedData.blob;
         const newAudioURL = URL.createObjectURL(newAudioBlob);
-        
+        let totalSeconds = 0;
         setIsProcessing(true);
         setAudioURL(newAudioURL);
 
         try {
             // Simulate using exampleResponse instead of fetching from backend
-            const response = exampleResponse;
+            const response = await convertSpeechToTextResponse(newAudioBlob, null);
 
             if (response.data) {
                 setChatResponse(response.data.chat_response.map((res) => res.text).join(' '));
-                setChatData(response); // Set chatData to the response
+                totalSeconds = response.data.chat_response.reduce((sum: number, item: { time_range: number }) => {
+                    return (sum + item.time_range);
+                }, 0);
+                totalSeconds = totalSeconds * 1000;
+                setChatData(response); 
             } else {
                 setChatResponse('An error occurred.');
                 console.error('Upload failed:', response);
@@ -135,11 +140,12 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         } finally {
             setIsProcessing(false);
             setShowChatResponse(true); // Show chat response
-
+            console.log("totalSeconds2", totalSeconds);
             setTimeout(() => {
                 setShowChatResponse(false); // Hide chat response
                 setCanRecordAgain(true);
-            }, 7000); // Show for 7 seconds
+                setStandbyMessage("")
+            }, totalSeconds); // Show for 7 seconds
         }       
     }, []);
 
