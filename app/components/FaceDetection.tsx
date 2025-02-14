@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import MicRecorder from './MicRecorder';
 
-export default function FaceDetection() {
+interface FaceDetectionProps {
+    faceDistanceParam: number;
+}
+
+export default function FaceDetection({faceDistanceParam}: FaceDetectionProps) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
@@ -51,8 +55,10 @@ export default function FaceDetection() {
         );
         // If face is detected, start recording
         if (detections.length > 0 && !faceDetected) {
-            setFaceDetected(true);
-            startRecording(); // Start recording when face is detected
+            if (detections[0].box._width >= faceDistanceParam) {
+                setFaceDetected(true);
+                startRecording(); // Start recording when face is detected
+            }
         } else if (detections.length === 0 && faceDetected) {
             setFaceDetected(false);
         }
