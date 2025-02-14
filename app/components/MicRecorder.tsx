@@ -140,7 +140,6 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         } finally {
             setIsProcessing(false);
             setShowChatResponse(true); // Show chat response
-            console.log("totalSeconds2", totalSeconds);
             setTimeout(() => {
                 setShowChatResponse(false); // Hide chat response
                 setCanRecordAgain(true);

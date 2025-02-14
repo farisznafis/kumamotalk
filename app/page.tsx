@@ -8,18 +8,20 @@ import ConversationArea from "./components/ConversationArea";
 import MicRecorder from "./components/MicRecorder";
 import BackgroundMusic from "./components/BackgroundMusic";
 import FaceDetection from "./components/FaceDetection";
-// import FaceDetection from "./components/FaceDetection";
 
 export default function Home() {
-  return (
-    <main className="relative flex flex-col items-center justify-center w-full h-full overflow-hidden bg-gray-100">
-      <Header/>
-      {/* <MicRecorder faceDetected={faceDetected}/> */}
-      <LanguageSelector/>
-      <ConversationArea/> 
-      <WaveBackground/>
-      {/* <BackgroundMusic/> */}
-      <FaceDetection/>
-    </main>
-  )
+    // State to manage the face distance parameter
+    const [faceDistanceParam, setFaceDistanceParam] = useState(100); // Default threshold (in pixels)
+
+    return (
+        <main className="relative flex flex-col items-center justify-center w-full h-full overflow-hidden bg-gray-100 z-50">
+            <Header />
+            <LanguageSelector />
+            <ConversationArea />
+            <WaveBackground />
+            <BackgroundMusic />
+            {/* Pass the faceDistanceParam as a prop to the FaceDetection component */}
+            <FaceDetection faceDistanceParam={faceDistanceParam}/>
+        </main>
+    );
 }
