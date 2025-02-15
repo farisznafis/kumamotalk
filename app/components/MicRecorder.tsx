@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { convertSpeechToTextResponse } from '../utils/api';
 
@@ -7,27 +7,8 @@ const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), 
 
 interface MicRecorderProps {
     faceDetected: boolean;
+    selectedLanguage: string;
 }
-
-// response example
-const exampleResponse = {
-    data: {
-        chat_response: [
-            {
-                text: "Oh, I love Kumamoto's famous basashi (raw horse meat) and sweet potatoes!",
-                time_range: 3
-            },
-            {
-                text: "They're delicious and bring joy to my bear heart, mon!",
-                time_range: 1.5
-            },
-            {
-                text: "What's your favorite food, mon?",
-                time_range: 1
-            }
-        ]
-    }
-};
 
 const ChatComponent = ({ chatData }: { chatData: any }) => {
     const [displayedText, setDisplayedText] = useState<string>('');
@@ -52,7 +33,7 @@ const ChatComponent = ({ chatData }: { chatData: any }) => {
     );
 };
 
-export default function MicRecorder({ faceDetected }: MicRecorderProps) {
+export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecorderProps) {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState<string>('');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -61,6 +42,11 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
     const [showChatResponse, setShowChatResponse] = useState(false);
     const [chatData, setChatData] = useState<any | null>(null);
     const [totalSeconds, setTotalSeconds] = useState(0);
+
+    const selectedLanguageRef = useRef(selectedLanguage);
+    useEffect(() => {
+        selectedLanguageRef.current = selectedLanguage;
+    }, [selectedLanguage]);
 
     const standbyMessages = [
         "こんにちはもん！",
@@ -120,11 +106,10 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
         setAudioURL(newAudioURL);
 
         try {
-            // Simulate using exampleResponse instead of fetching from backend
-            const response = await convertSpeechToTextResponse(newAudioBlob, null);
+            const response = await convertSpeechToTextResponse(newAudioBlob, selectedLanguageRef.current);
 
             if (response.data) {
-                setChatResponse(response.data.chat_response.map((res) => res.text).join(' '));
+                setChatResponse(response.data.chat_response.map((res: any) => res.text).join(' '));
                 totalSeconds = response.data.chat_response.reduce((sum: number, item: { time_range: number }) => {
                     return (sum + item.time_range);
                 }, 0);
@@ -139,14 +124,14 @@ export default function MicRecorder({ faceDetected }: MicRecorderProps) {
             setChatResponse('An error occurred.');
         } finally {
             setIsProcessing(false);
-            setShowChatResponse(true); // Show chat response
+            setShowChatResponse(true);
             setTimeout(() => {
-                setShowChatResponse(false); // Hide chat response
+                setShowChatResponse(false);
                 setCanRecordAgain(true);
                 setStandbyMessage("")
-            }, totalSeconds); // Show for 7 seconds
+            }, totalSeconds);
         }       
-    }, []);
+    }, [selectedLanguage]);
 
     return (
         <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[28px]">
