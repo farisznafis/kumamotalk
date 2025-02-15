@@ -5,9 +5,10 @@ import MicRecorder from './MicRecorder';
 
 interface FaceDetectionProps {
     faceDistanceParam: number;
+    selectedLanguange: string;
 }
 
-export default function FaceDetection({faceDistanceParam}: FaceDetectionProps) {
+export default function FaceDetection({faceDistanceParam, selectedLanguange}: FaceDetectionProps) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
@@ -15,30 +16,30 @@ export default function FaceDetection({faceDistanceParam}: FaceDetectionProps) {
 
     useEffect(() => {
         const loadModels = async () => {
-        try {
-            // await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
-            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models/')
-            setModelsLoaded(true);
-            startCamera();
-        } catch (error) {
-            console.error('Error loading face detection models:', error);
-        }
+            try {
+                // await faceapi.nets.tinyFaceDetector.loadFromUri('/models/');
+                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models/')
+                setModelsLoaded(true);
+                startCamera();
+            } catch (error) {
+                console.error('Error loading face detection models:', error);
+            }
         };
         loadModels();
     }, []);
 
     const startCamera = async () => {
         try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-        if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
 
-            videoRef.current.onloadedmetadata = () => {
-                videoRef.current?.play();
-                startFaceDetection();
-            };
-        }
+                videoRef.current.onloadedmetadata = () => {
+                    videoRef.current?.play();
+                    startFaceDetection();
+                };
+            }
         } catch (error) {
             console.error('Error accessing camera:', error);
         }
@@ -48,23 +49,23 @@ export default function FaceDetection({faceDistanceParam}: FaceDetectionProps) {
         if (!videoRef.current) return;
 
         const detectFaces = async () => {
-        const detections = await faceapi.detectAllFaces(
-            videoRef.current as HTMLVideoElement,
-            // new faceapi.TinyFaceDetectorOptions()
-            new faceapi.SsdMobilenetv1Options()
-        );
-        // If face is detected, start recording
-        if (detections.length > 0 && !faceDetected) {
-            if (detections[0].box._width >= faceDistanceParam) {
-                setFaceDetected(true);
-                startRecording(); // Start recording when face is detected
+            const detections = await faceapi.detectAllFaces(
+                videoRef.current as HTMLVideoElement,
+                // new faceapi.TinyFaceDetectorOptions()
+                new faceapi.SsdMobilenetv1Options()
+            );
+            // If face is detected, start recording
+            if (detections.length > 0 && !faceDetected) {
+                if (detections[0].box._width >= faceDistanceParam) {
+                    setFaceDetected(true);
+                    startRecording();
+                }
+            } else if (detections.length === 0 && faceDetected) {
+                setFaceDetected(false);
             }
-        } else if (detections.length === 0 && faceDetected) {
-            setFaceDetected(false);
-        }
 
-        // Keep detecting faces continuously
-        requestAnimationFrame(detectFaces);
+            // Keep detecting faces continuously
+            requestAnimationFrame(detectFaces);
         };
 
         detectFaces();
@@ -95,7 +96,7 @@ export default function FaceDetection({faceDistanceParam}: FaceDetectionProps) {
             {faceDetected && <p className="text-white text-[36px] font-bold hidden">Silakan ngomong</p>}
 
             {/* Pass faceDetected and recording status to MicRecorder */}
-            <MicRecorder faceDetected={faceDetected && recording} />
+            <MicRecorder faceDetected={faceDetected && recording} selectedLanguage={selectedLanguange}/>
         </>
     );
 }   
