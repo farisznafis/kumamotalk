@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LanguageMessage from "./LanguageMessage";
 import { Inter } from "next/font/google";
+import { div } from "@tensorflow/tfjs-core";
 
 const languages = [
   { code: "日本語", label: "日本語" },
@@ -25,12 +26,15 @@ export default function LanguageSelector({selectedLanguage, setSelectedLanguage}
     }
 
     return (
-        <div className="fixed flex flex-col justify-center items-center space-y-20 z-20 scale-50 bottom-0 w-full">
+        // <div className="flex flex-row justify-center items-center space-y-20 z-20 scale-50 bottom-0 w-full bg-black">
+        <div className="justify-start items-center gap-2 flex scale-50">
             {/* Komponen pesan */}
-            <LanguageMessage />
+            <div className="relative w-[360px] justify-start items-center flex mr-[15vh] max-w-2xl scale-150 mr-10">
+                <LanguageMessage />
+            </div>
 
             {/* Tombol pemilih bahasa */}
-            <div className="relative flex space-x-4 bg-transparent p-2 rounded-full scale-[2.8] {inter.className}">
+            <div className="relative flex space-x-2 bg-transparent p-2 rounded-full scale-[2.8] {inter.className} justify-end inline-flex">
                 {languages.map((lang) => (
                     <button
                         key={lang.code}

@@ -134,25 +134,25 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
     }, [selectedLanguage]);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[28px]">
-            <div className="text-white text-[28px] transition-opacity duration-300 w-[700px] text-center h-6">
+        <div className="flex flex-col items-center justify-center space-y-6 z-20">
+            <div className="text-[#333333] font-bold text-[36px] transition-opacity duration-300 text-center h-6 top-[28vh] absolute">
                 {isProcessing ? (
-                    <span className="text-[58px]">くまモン考え中...</span>
+                    <span className="text-[64px]">くまモン考え中...</span>
                 ) : showChatResponse && chatData ? (
                     <ChatComponent chatData={chatData} />
                 ) : (
-                    <span className="text-[58px]">{standbyMessage}</span>
+                    <span className="text-[64px]">{standbyMessage}</span>
                 )}
             </div>
 
-            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[18vh] relative">
+            <div className="w-full sm:w-[628px] h-[110px] rounded-full overflow-hidden flex items-center justify-center top-[58vh] absolute">
                 <ReactMic
                     record={recording}
                     className="react-mic"
                     onStop={onStopRecording}
                     mimeType="audio/wav"
-                    backgroundColor="black"
-                    strokeColor="white"
+                    backgroundColor="#2e7b99"
+                    strokeColor="#c8dfef"
                 />
             </div>
         </div>
