@@ -8,7 +8,7 @@ export default function Footer() {
     const [selectedLanguage, setSelectedLanguage] = useState("");
     
     return (
-        <footer className="h-[76.50px] justify-between items-center flex">
+        <footer className="h-[76.50px] justify-between items-center flex space-x-10">
             <div className="bg-neutral-50 rounded-[90px] flex-row justify-center items-center gap-[5px] flex">
                 <div className="w-[247.50px] h-[76.50px] px-[21px] justify-center items-center flex">
                     {/* import logo svg */}
