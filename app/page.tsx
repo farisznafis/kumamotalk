@@ -8,6 +8,7 @@ import ConversationArea from "./components/ConversationArea";
 import MicRecorder from "./components/MicRecorder";
 import FaceDetection from "./components/FaceDetection";
 import MainComponent from "./components/MainComponent";
+import SettingButton from "./components/SettingButton";
 
 export default function Home() {
     // State to manage the face distance parameter
@@ -22,6 +23,7 @@ export default function Home() {
             {/* <WaveBackground/> */}
             <WaveBackground>
                 <MainComponent/>
+                <SettingButton/>
             </WaveBackground>
             {/* Pass the faceDistanceParam as a prop to the FaceDetection component */}
             {/* <FaceDetection faceDistanceParam={faceDistanceParam} selectedLanguange={selectedLanguage}/> */}
