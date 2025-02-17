@@ -146,14 +146,14 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                 )}
             </div>
 
-            <div className="w-full sm:w-[628px] h-[110px] rounded-full overflow-hidden flex items-center justify-center top-[58vh] absolute">
+            <div className="w-full sm:w-[600px] h-[110px] rounded-full overflow-hidden flex items-center justify-center top-[60vh] absolute">
                 <ReactMic
                     record={recording}
                     className="react-mic"
                     onStop={onStopRecording}
                     mimeType="audio/wav"
-                    backgroundColor="#2e7b99"
-                    strokeColor="#c8dfef"
+                    backgroundColor="black"
+                    strokeColor="white"
                 />
             </div>
         </div>

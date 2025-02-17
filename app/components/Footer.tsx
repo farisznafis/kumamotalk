@@ -9,18 +9,18 @@ interface FooterProps {
 export default function Footer({selectedLanguage, setSelectedLanguage}: FooterProps) {
     
     return (
-        <footer className="h-[76.50px] justify-between items-center flex space-x-16">
-            <div className="bg-neutral-50 rounded-[90px] flex-row justify-center items-center gap-[5px] flex scale-90">
-                <div className="w-[247.50px] h-[76.50px] px-[21px] justify-center items-center flex">
+        <footer className="h-[76.50px] justify-between items-center flex space-x-14">
+            {/* <div className="bg-neutral-50 rounded-[90px] flex-row justify-center items-center gap-[5px] flex scale-90"> */}
+                <div className="w-[150px] h-[76.50px] px-[21px] justify-center items-center flex">
                     {/* import logo svg */}
                     <img
-                        src="../miki-logo.svg"
+                        src="../MIKI-500_logo.svg"
                         // className="fixed opacity-100 z-10 bottom-0"
                         className="relative"
                         alt="Header Text"
                     />
                 </div>
-            </div>
+            {/* </div> */}
             {/* language selector */}
             <div className="">
                 <LanguageSelector selectedLanguage={selectedLanguage} setSelectedLanguage={setSelectedLanguage}/>

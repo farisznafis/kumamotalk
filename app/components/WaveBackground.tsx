@@ -21,7 +21,7 @@ import { ReactNode } from 'react';
 
 export default function WaveBackground({ children }: { children: ReactNode }) {
     return (
-      <div className="relative w-full h-full inset-0 bg-[#2E7B99] flex">
+      <div className="relative w-full h-full inset-0 bg-black flex">
         {children}
       </div>
     );
