@@ -1,11 +1,12 @@
 import LanguageSelector from "./LanguageSelector";
 import { useState } from "react";
 
-export default function Footer() {
+interface FooterProps {
+    selectedLanguage: string;
+    setSelectedLanguage: React.Dispatch<React.SetStateAction<string>>;
+}
 
-    // State to manage the face distance parameter
-    const [faceDistanceParam, setFaceDistanceParam] = useState(90); // Default threshold (in pixels)
-    const [selectedLanguage, setSelectedLanguage] = useState("");
+export default function Footer({selectedLanguage, setSelectedLanguage}: FooterProps) {
     
     return (
         <footer className="h-[76.50px] justify-between items-center flex space-x-16">

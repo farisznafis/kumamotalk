@@ -31,10 +31,12 @@
 import { useState } from "react";
 import FaceDetection from "./FaceDetection";
 
-export default function ConversationArea() {
-  // State to manage the face distance parameter
-  const [faceDistanceParam, setFaceDistanceParam] = useState(90); // Default threshold (in pixels)
-  const [selectedLanguage, setSelectedLanguage] = useState("");
+interface ConversationAreaProps {
+    faceDistanceParam: number;
+    selectedLanguage: string;
+}
+
+export default function ConversationArea({faceDistanceParam, selectedLanguage}: ConversationAreaProps) {
 
   return (
     <div className="h-[672.25px] relative">

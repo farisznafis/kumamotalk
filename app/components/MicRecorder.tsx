@@ -49,9 +49,9 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
     }, [selectedLanguage]);
 
     const standbyMessages = [
-        "こんにちはもん！",
-        "質問してねもん！",
-        "展示会どうだったもん？"
+        "こんにちは、お元気ですか？",
+        "ご質問があれば、お気軽にどうぞ",
+        "展示会はいかがでしたか？"
     ];
 
     // Initial default value to avoid hydration mismatch
@@ -69,7 +69,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                     setStandbyMessage(standbyMessages[randomIndex]);
                 }, 3000);
             } else {
-                setStandbyMessage("しゃべってくださいもん！");
+                setStandbyMessage("お話しください");
             }
 
             return () => {
@@ -108,7 +108,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
         try {
             const response = await convertSpeechToTextResponse(newAudioBlob, selectedLanguageRef.current);
 
-            if (response.data) {
+            if (response.success && response.data) {
                 setChatResponse(response.data.chat_response.map((res: any) => res.text).join(' '));
                 totalSeconds = response.data.chat_response.reduce((sum: number, item: { time_range: number }) => {
                     return (sum + item.time_range);
@@ -117,10 +117,11 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                 setChatData(response); 
             } else {
                 setChatResponse('An error occurred.');
-                console.error('Upload failed:', response);
+                // console.error('Upload failed:', response);
             }
         } catch (error) {
-            console.error('Error processing audio:', error);
+            // console.error('Error processing audio:', error);
+            setStandbyMessage('声が聞こえません！もう一度話してみてください');
             setChatResponse('An error occurred.');
         } finally {
             setIsProcessing(false);
@@ -137,7 +138,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
         <div className="flex flex-col items-center justify-center space-y-6 z-20">
             <div className="text-[#333333] font-bold text-[36px] transition-opacity duration-300 text-center h-6 top-[28vh] absolute">
                 {isProcessing ? (
-                    <span className="text-[64px]">くまモン考え中...</span>
+                    <span className="text-[64px]">考え中...</span>
                 ) : showChatResponse && chatData ? (
                     <ChatComponent chatData={chatData} />
                 ) : (
