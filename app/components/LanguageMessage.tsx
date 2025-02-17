@@ -18,7 +18,7 @@ export default function LanguageMessage() {
   }, []);
 
   return (
-    <p className="text-black text-xl font-['Noto Sans JP'] font-medium">
+    <p className="text-white text-xl font-['Noto Sans JP'] font-medium leading-tight">
       {messages[currentMessageIndex].text}
     </p>
   );

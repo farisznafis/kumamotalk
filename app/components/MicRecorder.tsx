@@ -27,8 +27,8 @@ const ChatComponent = ({ chatData }: { chatData: any }) => {
     }, [currentIndex, chatData]);
 
     return (
-        <div className="flex items-center justify-center h-full text-white text-center">
-            <p className="text-[52px] opacity-100 transition-opacity duration-500 leading-[1.15] -mb-[20px] top-[5vh]">{displayedText}</p>
+        <div className="flex items-center justify-center h-full text-[#333333] text-center w-[90vh]">
+            <p className="text-[64px] opacity-100 transition-opacity duration-500 leading-[1.05] top-[10vh] mt-16">{displayedText}</p>
         </div>
     );
 };
