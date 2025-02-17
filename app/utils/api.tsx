@@ -25,7 +25,7 @@ export const convertSpeechToTextResponse = async (audioBlob: Blob, language: str
             return { success: false, error: data };
         }
     } catch (error) {
-        console.error("Error uploading file:", error);
+        // console.error("Error uploading file:", error);
         return { success: false, error };
     }
 };

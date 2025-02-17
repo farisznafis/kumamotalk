@@ -27,8 +27,8 @@ const ChatComponent = ({ chatData }: { chatData: any }) => {
     }, [currentIndex, chatData]);
 
     return (
-        <div className="flex items-center justify-center h-full text-white text-center">
-            <p className="text-[52px] opacity-100 transition-opacity duration-500 leading-[1.15] -mb-[20px] top-[5vh]">{displayedText}</p>
+        <div className="flex items-center justify-center h-full text-[#333333] text-center w-[90vh]">
+            <p className="text-[64px] opacity-100 transition-opacity duration-500 leading-[1.05] top-[10vh] mt-16">{displayedText}</p>
         </div>
     );
 };
@@ -49,9 +49,9 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
     }, [selectedLanguage]);
 
     const standbyMessages = [
-        "こんにちはもん！",
-        "質問してねもん！",
-        "展示会どうだったもん？"
+        "こんにちは、お元気ですか？",
+        "ご質問があれば、お気軽にどうぞ",
+        "展示会はいかがでしたか？"
     ];
 
     // Initial default value to avoid hydration mismatch
@@ -69,7 +69,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                     setStandbyMessage(standbyMessages[randomIndex]);
                 }, 3000);
             } else {
-                setStandbyMessage("しゃべってくださいもん！");
+                setStandbyMessage("お話しください");
             }
 
             return () => {
@@ -108,7 +108,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
         try {
             const response = await convertSpeechToTextResponse(newAudioBlob, selectedLanguageRef.current);
 
-            if (response.data) {
+            if (response.success && response.data) {
                 setChatResponse(response.data.chat_response.map((res: any) => res.text).join(' '));
                 totalSeconds = response.data.chat_response.reduce((sum: number, item: { time_range: number }) => {
                     return (sum + item.time_range);
@@ -117,10 +117,11 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                 setChatData(response); 
             } else {
                 setChatResponse('An error occurred.');
-                console.error('Upload failed:', response);
+                // console.error('Upload failed:', response);
             }
         } catch (error) {
-            console.error('Error processing audio:', error);
+            // console.error('Error processing audio:', error);
+            setStandbyMessage('声が聞こえません！もう一度話してみてください');
             setChatResponse('An error occurred.');
         } finally {
             setIsProcessing(false);
@@ -134,18 +135,18 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
     }, [selectedLanguage]);
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 z-20 relative -top-[28px]">
-            <div className="text-white text-[28px] transition-opacity duration-300 w-[700px] text-center h-6">
+        <div className="flex flex-col items-center justify-center space-y-6 z-20">
+            <div className="text-[#333333] font-bold text-[36px] transition-opacity duration-300 text-center h-6 top-[28vh] absolute">
                 {isProcessing ? (
-                    <span className="text-[58px]">くまモン考え中...</span>
+                    <span className="text-[64px]">考え中...</span>
                 ) : showChatResponse && chatData ? (
                     <ChatComponent chatData={chatData} />
                 ) : (
-                    <span className="text-[58px]">{standbyMessage}</span>
+                    <span className="text-[64px]">{standbyMessage}</span>
                 )}
             </div>
 
-            <div className="w-full sm:w-[200px] h-[80px] rounded-full overflow-hidden flex items-center justify-center top-[18vh] relative">
+            <div className="w-full sm:w-[600px] h-[110px] rounded-full overflow-hidden flex items-center justify-center top-[60vh] absolute">
                 <ReactMic
                     record={recording}
                     className="react-mic"
