@@ -20,9 +20,9 @@
 import { ReactNode } from 'react';
 
 export default function WaveBackground({ children }: { children: ReactNode }) {
-    return (
-      <div className="relative w-full h-full inset-0 bg-black flex">
-        {children}
-      </div>
-    );
+  return (
+    <div className="relative w-full h-full inset-0 bg-gradient-to-b from-black to-gray-800 flex">
+      {children}
+    </div>
+  );
 }
