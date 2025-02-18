@@ -102,6 +102,7 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
         const newAudioBlob = recordedData.blob;
         const newAudioURL = URL.createObjectURL(newAudioBlob);
         let totalSeconds = 0;
+        let isError = false;
         setIsProcessing(true);
         setAudioURL(newAudioURL);
 
@@ -114,15 +115,42 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                     return (sum + item.time_range);
                 }, 0);
                 totalSeconds = totalSeconds * 1000;
+                console.log("response : ", response);
                 setChatData(response); 
             } else {
                 setChatResponse('An error occurred.');
+                totalSeconds = 4000
+                let errResponse = {
+                    "data" : {
+                        "chat_response": [
+                            {
+                                "text" : "声が聞こえません！もう一度話してみてください",
+                                "time_range" : 4
+                            }
+                        ]
+                    }
+                }
+                setChatData(errResponse);
+                isError = true;
                 // console.error('Upload failed:', response);
             }
         } catch (error) {
             // console.error('Error processing audio:', error);
             setStandbyMessage('声が聞こえません！もう一度話してみてください');
             setChatResponse('An error occurred.');
+            totalSeconds = 4000
+                let errResponse = {
+                    "data" : {
+                        "chat_response": [
+                            {
+                                "text" : "声が聞こえません！もう一度話してみてください",
+                                "time_range" : 4
+                            }
+                        ]
+                    }
+                }
+            setChatData(errResponse);
+            isError = true;
         } finally {
             setIsProcessing(false);
             setShowChatResponse(true);
@@ -131,6 +159,11 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                 setCanRecordAgain(true);
                 setStandbyMessage("")
             }, totalSeconds);
+            if (isError) {
+                setTimeout(() => {
+                    window.location.reload(); // Reload the page after 2 seconds
+                }, 2500);
+            }
         }       
     }, [selectedLanguage]);
 
