@@ -14,10 +14,10 @@ export default function ConversationArea({faceDistanceParam, selectedLanguage}: 
             <defs>
               {/* Gradient untuk efek 3D */}
               <linearGradient id="gradient1" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stopColor="#E74552" />
+                <stop offset="0%" stopColor="#E70012" />
                 {/* <stop offset="50%" stopColor="#F76B1C" /> */}
-                <stop offset="100%" stopColor="#E74552" />
-              </linearGradient>
+                <stop offset="100%" stopColor="#000000" />
+              </linearGradient> 
               <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
                 <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#ffffff" />
               </filter>
