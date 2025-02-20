@@ -159,11 +159,11 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                 setCanRecordAgain(true);
                 setStandbyMessage("")
             }, totalSeconds);
-            if (isError) {
-                setTimeout(() => {
-                    window.location.reload(); // Reload the page after 2 seconds
-                }, 2500);
-            }
+            // if (isError) {
+            //     setTimeout(() => {
+            //         window.location.reload(); // Reload the page after 2 seconds
+            //     }, 2500);
+            // }
         }       
     }, [selectedLanguage]);
 
