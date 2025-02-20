@@ -187,13 +187,8 @@ export default function MicRecorder({ faceDetected, selectedLanguage }: MicRecor
                     mimeType="audio/wav"
                     backgroundColor="#131313"
                     strokeColor="white"
-                    style={{
-                        border: '2px solid rgba(255, 255, 255, 0.5)', // White border with 50% opacity
-                        boxShadow: '0 0 10px rgba(255, 255, 255, 0.5)' // Optional shadow effect
-                    }}
                 />
             </div>
-
         </div>
     );
 }
